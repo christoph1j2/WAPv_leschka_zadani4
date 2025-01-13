@@ -1,0 +1,124 @@
+{* This is the welcome page, you can delete it *}
+
+{block content}
+<div id="banner" class="bg-white px-3 py-1 my-2 rounded">
+	<h1 n:block=title class="text-center">Nette, Zadání 4</h1>
+</div>
+
+<div id="content">
+	<div n:foreach="$flashes as $flash" class="mx-3 flash-message flash-{$flash->type}">
+		{$flash->message}
+	</div>
+	{control register}
+</div>
+
+<script type="application/javascript">
+	$(function()
+	{
+		// Poveseni funkce pro zmenu selectu Kraj, ...
+		$('select[name="kraj"]').on('change', function ()
+		{
+			// Aktualni select box (array)
+			let select = $(this)[0];
+
+			// Vytvoreni AJAX pozadavku + zpracovani odpovedi
+			$.nette.ajax({
+				url: {plink ZmenaOkresSelectBoxu!},
+				data: { name: select.name, choice: select.value }
+			})
+					.done(function (payload) {
+						console.log(payload);
+						let dependent = $("select[data-depends='" + select.name + "']")[0];
+
+						if (dependent) {
+							dependent.innerHTML=payload.options;
+
+							$(dependent).prop('disabled', false).change();
+						}
+					})
+					.fail(function () {
+						console.error("failed to fetch");
+					});
+		});
+
+		// Poveseni funkce pro zmenu selectu Okres
+		$('select[name="okres"]').on('change', function (){
+			let select = $(this)[0];
+
+			$.nette.ajax({
+				url: {plink ZmenaObecSelectBoxu!},
+				data: { name: select.name, choice: select.value }
+			})
+					.done(function (payload){
+						console.log(payload);
+						let dependent = $("select[data-depends='" + select.name + "']")[0];
+
+						if(dependent){
+							dependent.innerHTML = payload.options;
+							$(dependent).prop('disabled', false);
+							$(dependent).change();
+						}
+					})
+					.fail(function (){
+						console.error("failed to fetch")
+					});
+		});
+
+		// Korespondenci adresy ...
+		$('select[name="correspondence_kraj"]').on('change', function (){
+			let select = $(this)[0];
+
+			$.nette.ajax({
+				url: {plink ZmenaOkres2SelectBoxu!},
+				data: { name: select.name, choice: select.value }
+			})
+					.done(function (payload){
+						console.log(payload);
+						let dependent = $("select[data-depends='" + select.name + "']")[0];
+
+						if(dependent){
+							dependent.innerHTML = payload.options;
+							$(dependent).prop('disabled', false);
+							$(dependent).change();
+						}
+					})
+					.fail(function (){
+						console.error("failed to fetch")
+					});
+		});
+		$('select[name="correspondence_okres"]').on('change', function (){
+			let select = $(this)[0];
+
+			$.nette.ajax({
+				url: {plink ZmenaObec2SelectBoxu!},
+				data: { name: select.name, choice: select.value }
+			})
+					.done(function (payload){
+						console.log(payload);
+						let dependent = $("select[data-depends='" + select.name + "']")[0];
+
+						if(dependent){
+							dependent.innerHTML = payload.options;
+							$(dependent).prop('disabled', false);
+							$(dependent).change();
+						}
+					})
+					.fail(function (){
+						console.error("failed to fetch")
+					});
+		});
+
+		$('form').on('submit', function (event) {
+			event.preventDefault();
+
+			let formData = $(this).serializeArray();
+			console.log(formData);
+
+			console.log('Okres:', $('select[name="okres"]').val());
+			console.log('Obec:', $('select[name="city"]').val());
+			this.submit();
+		})
+	});
+</script>
+
+

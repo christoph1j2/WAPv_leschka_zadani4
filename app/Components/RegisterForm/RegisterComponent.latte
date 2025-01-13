@@ -1,0 +1,157 @@
+<div class="container py-3">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            {foreach $flashes as $flash}
+                {var $alertClass = match ($flash->type) {
+                'success' => 'alert-success',
+                'error' => 'alert-danger',
+                'info' => 'alert-info',
+                'warning' => 'alert-warning',
+                default => 'alert-info'
+                }}
+                <div class="mx-3 alert {$alertClass} alert-dismissible fade show" role="alert">
+                    {$flash->message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {/foreach}
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Registrační formulář</h2>
+
+                    <p class="text-center mb-4">
+                        <a href="{$presenter->link('this', ['locale' => 'cs'])}">CZ</a>
+                        <a href="{$presenter->link('this', ['locale' => 'en'])}">EN</a>
+                        <a href="{$presenter->link('this', ['locale' => 'de'])}">DE</a>
+                    </p>
+
+                    <div n:foreach="$flashes as $flash" class="alert alert-{$flash->type} alert-dismissible fade show" role="alert">
+                        {$flash->message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+
+                    {form form class => 'needs-validation'}
+                        <ul class="alert alert-danger" n:ifcontent>
+                            <li n:foreach="$form->getOwnErrors() as $error">{$error}</li>
+                        </ul>
+
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="mb-3">
+                                    {label username class => 'form-label'/}
+                                    {input username class => 'form-control' . ($form['username']->hasErrors() ? ' is-invalid' : '')}
+                                    <div class="invalid-feedback">{inputError username}</div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        {label name class => 'form-label'/}
+                                        {input name class => 'form-control' . ($form['name']->hasErrors() ? ' is-invalid' : '')}
+                                        <div class="invalid-feedback">{inputError name}</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        {label surname class => 'form-label'/}
+                                        {input surname class => 'form-control' . ($form['surname']->hasErrors() ? ' is-invalid' : '')}
+                                        <div class="invalid-feedback">{inputError surname}</div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        {label password class => 'form-label'/}
+                                        {input password class => 'form-control' . ($form['password']->hasErrors() ? ' is-invalid' : '')}
+                                        <div class="invalid-feedback">{inputError password}</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        {label password_confirm class => 'form-label'/}
+                                        {input password_confirm class => 'form-control' . ($form['password_confirm']->hasErrors() ? ' is-invalid' : '')}
+                                        <div class="invalid-feedback">{inputError password_confirm}</div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    {label email class => 'form-label'/}
+                                    {input email class => 'form-control' . ($form['email']->hasErrors() ? ' is-invalid' : '')}
+                                    <div class="invalid-feedback">{inputError email}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h3 class="card-title h5 mb-3">Adresa</h3>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        {label kraj class => 'form-label'/}
+                                        {input kraj class => 'form-control' . ($form['kraj']->hasErrors() ? ' is-invalid' : '')}
+                                        <div class="invalid-feedback">{inputError kraj}</div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        {label okres class => 'form-label'/}
+                                        {input okres class => 'form-control' . ($form['okres']->hasErrors() ? ' is-invalid' : '')}
+                                        <div class="invalid-feedback">{inputError okres}</div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        {label city class => 'form-label'/}
+                                        {input city class => 'form-control' . ($form['city']->hasErrors() ? ' is-invalid' : '')}
+                                        <div class="invalid-feedback">{inputError city}</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        {label postal_code class => 'form-label'/}
+                                        {input postal_code class => 'form-control' . ($form['postal_code']->hasErrors() ? ' is-invalid' : '')}
+                                        <div class="invalid-feedback">{inputError postal_code}</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        {label street class => 'form-label'/}
+                                        {input street class => 'form-control' . ($form['street']->hasErrors() ? ' is-invalid' : '')}
+                                        <div class="invalid-feedback">{inputError street}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <h3 class="card-title h5 mb-3">Korespondenční adresa</h3>
+                                <div class="row">
+                                    <div class="col-md-4 mb-3">
+                                        {label correspondence_kraj class => 'form-label'/}
+                                        {input correspondence_kraj class => 'form-control' . ($form['correspondence_kraj']->hasErrors() ? ' is-invalid' : '')}
+                                        <div class="invalid-feedback">{inputError correspondence_kraj}</div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        {label correspondence_okres class => 'form-label'/}
+                                        {input correspondence_okres class => 'form-control' . ($form['correspondence_okres']->hasErrors() ? ' is-invalid' : '')}
+                                        <div class="invalid-feedback">{inputError correspondence_okres}</div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        {label correspondence_city class => 'form-label'/}
+                                        {input correspondence_city class => 'form-control' . ($form['correspondence_city']->hasErrors() ? ' is-invalid' : '')}
+                                        <div class="invalid-feedback">{inputError correspondence_city}</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        {label correspondence_postal_code class => 'form-label'/}
+                                        {input correspondence_postal_code class => 'form-control' . ($form['correspondence_postal_code']->hasErrors() ? ' is-invalid' : '')}
+                                        <div class="invalid-feedback">{inputError correspondence_postal_code}</div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        {label correspondence_street class => 'form-label'/}
+                                        {input correspondence_street class => 'form-control' . ($form['correspondence_street']->hasErrors() ? ' is-invalid' : '')}
+                                        <div class="invalid-feedback">{inputError correspondence_street}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            {input send class => 'btn btn-primary btn-lg'}
+                        </div>
+                    {/form}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

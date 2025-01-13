@@ -1,0 +1,12 @@
+services:
+	- App\Core\RouterFactory::createRouter
+	- App\Models\User\UserModel
+	- App\Models\Kraj\KrajModel
+	- App\Models\Obec\ObecModel
+
+
+search:
+	-	in: %appDir%
+		classes:
+			- *Factory
+			- *Facade
