@@ -16,13 +16,13 @@
             {/foreach}
             <div class="card shadow">
                 <div class="card-body">
-                    <h2 class="card-title text-center mb-4">Registrační formulář</h2>
+                    <h2 class="card-title text-center mb-4">{translate}Registrační formulář{/translate}</h2>
 
-                    <p class="text-center mb-4">
-                        <a href="{$presenter->link('this', ['locale' => 'cs'])}">CZ</a>
-                        <a href="{$presenter->link('this', ['locale' => 'en'])}">EN</a>
-                        <a href="{$presenter->link('this', ['locale' => 'de'])}">DE</a>
-                    </p>
+{*                    <p class="text-center mb-4">*}
+{*                        <a href="{$presenter->link('this', ['locale' => 'cs'])}">CZ</a>*}
+{*                        <a href="{$presenter->link('this', ['locale' => 'en'])}">EN</a>*}
+{*                        <a href="{$presenter->link('this', ['locale' => 'de'])}">DE</a>*}
+{*                    </p>*}
 
                     <div n:foreach="$flashes as $flash" class="alert alert-{$flash->type} alert-dismissible fade show" role="alert">
                         {$flash->message}

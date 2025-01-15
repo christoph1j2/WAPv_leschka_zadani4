@@ -5,6 +5,7 @@ namespace App\Forms\Register;
 use App\Forms\BaseForm;
 use App\Models\Kraj\KrajModel;
 use App\Models\Obec\ObecModel;
+use App\Models\Preklad\PrekladModel;
 use App\Models\User\UserModel;
 use Contributte\FormsBootstrap\BootstrapForm;
 use Nette\Database\UniqueConstraintViolationException;
@@ -23,11 +24,15 @@ class RegisterForm extends BaseForm
     /** @var ObecModel */
     protected $obecModel;
 
-    public function __construct(UserModel $userModel, KrajModel $krajModel, ObecModel $obecModel)
+    /** @var PrekladModel */
+    protected $prekladModel;
+
+    public function __construct(UserModel $userModel, KrajModel $krajModel, ObecModel $obecModel, PrekladModel $prekladModel)
     {
         $this->userModel = $userModel;
         $this->krajModel = $krajModel;
         $this->obecModel = $obecModel;
+        $this->prekladModel = $prekladModel;
 
         parent::__construct(null);
 
@@ -163,38 +168,11 @@ class RegisterForm extends BaseForm
 
     protected function formSucceeded(BootstrapForm $form, ArrayHash $data)
     {
-        Debugger::barDump($data, 'Submitted form data');
-        Debugger::log($data, Debugger::INFO);
-
-        if (empty($data['okres'])) {
-            $form->addError('Okres field is empty.');
-            $this->getPresenter()->flashMessage('Okres field is required.', 'warning');
-            return;
-        }
-
-        if (empty($data['obec'])) {
-            $form->addError('Obec field is empty.');
-            $this->getPresenter()->flashMessage('Obec field is required.', 'warning');
-            return;
-        }
-
-        $data['okres'] = $data['okres'] ? $data['okres'] : $form['okres']->getRawValue();
-        $data['city'] = $data['city'] ? $data['city'] : $form['city']->getRawValue();
-        $data['correspondence_okres'] = $data['correspondence_okres'] ? $data['correspondence_okres'] : $form['correspondence_okres']->getRawValue();
-        $data['correspondence_city'] = $data['correspondence_city'] ? $data['correspondence_city'] : $form['correspondence_city']->getRawValue();
-
-        Debugger::barDump($data, 'Form data pred validaci');
-
-        $requiredFields = ['postal_code', 'city', 'correspondence_city', 'correspondence_postal_code'];
-        foreach ($requiredFields as $field) {
-            if (!isset($data[$field])) {
-                $form->addError($field, self::EMPTY_FIELD);
-                $this->getPresenter()->flashMessage("Field $field is required", 'warning');
-                return;
-            }
-        }
-        Debugger::barDump($data, 'corrected');
-
+//        $data['okres'] = $data['okres'] ? $data['okres'] : $form['okres']->getRawValue();
+//        $data['city'] = $data['city'] ? $data['city'] : $form['city']->getRawValue();
+//        $data['correspondence_okres'] = $data['correspondence_okres'] ? $data['correspondence_okres'] : $form['correspondence_okres']->getRawValue();
+//        $data['correspondence_city'] = $data['correspondence_city'] ? $data['correspondence_city'] : $form['correspondence_city']->getRawValue();
+//
         //vlozeni zaznamu do db
         try
         {
@@ -264,6 +242,22 @@ class RegisterForm extends BaseForm
         }
     }
 
+    // FIX
+    protected function onAnchor(BootstrapForm $form)
+    {
+        $id = $form['kraj']->getValue();
+        $form['okres']->setItems($id ? $this->obecModel->seznamOkresuProSelect($id) : []);
+
+        $id = $form['okres']->getValue();
+        $form['city']->setItems($id ? $this->obecModel->seznamObciProSelect($id) : []);
+
+        $id = $form['correspondence_kraj']->getValue();
+        $form['correspondence_okres']->setItems($id ? $this->obecModel->seznamOkresuProSelect($id) : []);
+
+        $id = $form['correspondence_okres']->getValue();
+        $form['correspondence_city']->setItems($id ? $this->obecModel->seznamObciProSelect($id) : []);
+    }
+
     protected function sanitizeData(ArrayHash $data)
     {
         $data->name = $this->sanitizeText($data->name);
@@ -280,7 +274,7 @@ class RegisterForm extends BaseForm
         $data->correspondence_street = $this->sanitizeText($data->correspondence_street);
         $data->correspondence_postal_code = preg_replace('/[^0-9]/', '', $data->correspondence_postal_code);
 
-        Debugger::barDump($data);
+        //Debugger::barDump($data);
         return $data;
     }
 }

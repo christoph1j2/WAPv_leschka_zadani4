@@ -3,6 +3,7 @@ services:
 	- App\Models\User\UserModel
 	- App\Models\Kraj\KrajModel
 	- App\Models\Obec\ObecModel
+	- App\Models\Preklad\PrekladModel
 
 
 search:

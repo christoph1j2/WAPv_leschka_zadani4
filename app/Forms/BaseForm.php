@@ -27,6 +27,7 @@ abstract class BaseForm extends BootstrapForm
         // Odeslani formulare
         $this->addSubmit('send', 'Odeslat formulář');
 
+        $this->onAnchor[] = [$this, 'onAnchor'];
         $this->onValidate[] = [$this, 'validateForm'];
         $this->onSuccess[] = [$this, 'formSucceeded'];
 
@@ -37,6 +38,7 @@ abstract class BaseForm extends BootstrapForm
 
     abstract protected function formSucceeded(BootstrapForm $form, ArrayHash $data);
     abstract protected function validateForm(BootstrapForm $form, ArrayHash $data);
+    abstract protected function onAnchor(BootstrapForm $form);
 
     //* Metody k vycisteni dat proti xss a sql injection
     abstract protected function sanitizeData(ArrayHash $data);

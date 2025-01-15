@@ -7,7 +7,9 @@ namespace App\UI\Home;
 use App\Components\RegisterForm\RegisterComponent;
 use App\Models\Kraj\KrajModel;
 use App\Models\Obec\ObecModel;
+use App\Models\Preklad\PrekladModel;
 use App\Models\User\UserModel;
+use Latte\Essential\TranslatorExtension;
 use Nette;
 
 ob_start();
@@ -23,9 +25,33 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     /** @var ObecModel @inject */
     public $obecModel;
 
+    /** @var PrekladModel */
+    public $prekladModel;
+
+    /** @persistent */
+    public $locale = 'cs';
+
+    public function __construct(PrekladModel $prekladModel)
+    {
+        $this->prekladModel = $prekladModel;
+    }
+
+    function beforeRender()
+    {
+        parent::beforeRender();
+
+
+        $extension = new TranslatorExtension(
+            $this->prekladModel->translate(...)
+        );
+        $this->template->getLatte()->addExtension($extension);
+        $this->prekladModel->nacistPreklady($this->locale);
+
+    }
+
     function createComponentRegister(): ?Nette\ComponentModel\IComponent
     {
-        return new RegisterComponent($this->userModel, $this->krajModel, $this->obecModel);
+        return new RegisterComponent($this->userModel, $this->krajModel, $this->obecModel, $this->prekladModel);
     }
 
     // Dynamic select box

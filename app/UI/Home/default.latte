@@ -9,7 +9,8 @@
 	<div n:foreach="$flashes as $flash" class="mx-3 flash-message flash-{$flash->type}">
 		{$flash->message}
 	</div>
-	{control register}
+	<h2 class="card-title text-center mb-4">{translate}Registrační formulář{/translate}</h2>
+		{control register}
 </div>
 
 <script type="application/javascript">

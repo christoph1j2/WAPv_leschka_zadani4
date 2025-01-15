@@ -25,8 +25,8 @@ class UserModel extends BaseModel
         );
 
         // Hash hesla a nasledny unset hesla (form)
-        $data['password_hash'] = $this->passwords->hash($data['password']);
-        unset($data['password_hash'], $data['password_confirm']);
+        $data['password'] = $this->passwords->hash($data['password']);
+        unset(/*$data['password'],*/ $data['password_confirm']);
 
         // Ulozeni do db
         $this->insert($data);
@@ -63,7 +63,7 @@ class UserModel extends BaseModel
         // Zabezpeceno proti SQL operacim
         $address = $this->explorer->table('obec')
             ->where('PSC = ?', (string) $postcode)
-            ->where('Obec = ? OR CastObce = ?', $city, $city)
+            ->where('ObecID = ? OR CastObceID = ?', $city, $city)
             ->fetch();
 
         // Neexistuje-li -> chyba
@@ -75,7 +75,7 @@ class UserModel extends BaseModel
         // Zabezpeceno proti SQL operacim
         $correspondenceAddress = $this->explorer->table('obec')
             ->where('PSC = ?', (string) $correspondence_postcode)
-            ->where('Obec = ? OR CastObce = ?', $correspondence_city, $correspondence_city)
+            ->where('ObecID = ? OR CastObceID = ?', $correspondence_city, $correspondence_city)
             ->fetch();
 
         // Neexistuje-li -> chyba
