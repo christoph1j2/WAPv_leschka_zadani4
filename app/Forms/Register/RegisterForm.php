@@ -112,7 +112,7 @@ class RegisterForm extends BaseForm
             ->addRule($this::MaxLength, 'Obec může mít max %d znaků', 100)
         ;
         */
-        $city = $this->addSelect('city', $this->prekladModel->translate('Obec:'))
+        $this->addSelect('city', $this->prekladModel->translate('Obec:'))
             ->setPrompt('-- Zvolte obec --')
             ->setHtmlAttribute('data-depends', $okres->getHtmlName())
             ->checkDefaultValue(false)
@@ -154,7 +154,7 @@ class RegisterForm extends BaseForm
             ->addRule($this::MaxLength, 'Obec může mít max %d znaků', 100)
         ;
         */
-        $correspondence_city = $this->addSelect('correspondence_city', $this->prekladModel->translate('Obec:'))
+        $this->addSelect('correspondence_city', $this->prekladModel->translate('Obec:'))
             ->setPrompt('-- Zvolte obec --')
             ->setHtmlAttribute('data-depends', $correspondence_okres->getHtmlName())
             //->setRequired(self::EMPTY_FIELD)
@@ -194,7 +194,12 @@ class RegisterForm extends BaseForm
             $this->sendConfirmEmail($sanitizedData);
 
             $this->getPresenter()->flashMessage('Registrace proběhla úspěšně.', "success");
-            $this->getPresenter()->redirect("this");
+
+            $params = $this->getPresenter()->getParameters();
+            //odstraneni nepotrebneho parametru
+            unset($params['register-locale']);
+
+            $this->getPresenter()->redirect("this", $params);
         }
         catch (UniqueConstraintViolationException $e)
         {
@@ -304,11 +309,36 @@ class RegisterForm extends BaseForm
             $templatePath = __DIR__ . '/../../Templates/Email/cs/RegisterEmailTemplate.latte';
         }
 
+        $nazevKraje = $this->krajModel->resolveNazevKraje($data->kraj); $nazevKrajeKor = $this->krajModel->resolveNazevKraje($data->correspondence_kraj);
+        $nazevOkresu = $this->obecModel->resolveNazevOkresu($data->kraj,$data->okres); $nazevOkresuKor = $this->obecModel->resolveNazevOkresu($data->correspondence_kraj,$data->correspondence_okres);
+        $nazevObce = $this->obecModel->resolveNazevObce($data->okres,$data->city); $nazevObceKor = $this->obecModel->resolveNazevObce($data->correspondence_okres,$data->correspondence_city);
+//        Debugger::barDump($nazevKraje); Debugger::barDump($data->kraj); Debugger::barDump($this->krajModel->resolveNazevKraje($data->kraj));
+//        Debugger::barDump($nazevOkresu); Debugger::barDump($data->okres); Debugger::barDump($this->obecModel->resolveNazevOkresu($data->kraj,$data->okres));
+//        Debugger::barDump($nazevObce); Debugger::barDump($data->city); Debugger::barDump($this->obecModel->resolveNazevObce($data->okres,$data->city));
+//        Debugger::barDump($data, 'Form Data');
+//        Debugger::barDump($this->prekladModel->getCurrentLocale(), 'Current Locale');
+//        Debugger::barDump($nazevObce, 'Translated Obec Name');
+//        Debugger::barDump($nazevObceKor, 'Translated Correspondence Obec Name');
+
         // vykresleni sablony - vkladani dat z formulare do mailu bez hesla
+        // if() peklo kvuli spravnemu zapisu do mailu
         $latte = new \Latte\Engine;
         $params = [];
         foreach ($data as $key => $value) {
-            if ($key !== 'password' && $key !== 'password_confirm') {
+            //Debugger::barDump($key, $value);
+            if ($key === 'kraj') {
+                $params['nazevKraje'] = $nazevKraje;
+            } elseif ($key === 'okres') {
+                $params['nazevOkresu'] = $nazevOkresu;
+            } elseif ($key === 'city') {
+                $params['nazevObce'] = $nazevObce;
+            } elseif ($key === 'correspondence_kraj') {
+                $params['nazevKrajeKor'] = $nazevKrajeKor;
+            } elseif ($key === 'correspondence_okres') {
+                $params['nazevOkresuKor'] = $nazevOkresuKor;
+            } elseif ($key === 'correspondence_city') {
+                $params['nazevObceKor'] = $nazevObceKor;
+            } elseif ($key !== 'password' && $key !== 'password_confirm') {
                 $params[$key] = $value;
             }
         }

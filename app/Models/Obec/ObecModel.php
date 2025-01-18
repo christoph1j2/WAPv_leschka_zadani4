@@ -22,6 +22,15 @@ class ObecModel extends BaseModel
             ;
     }
 
+    public function seznamObci($okresID)
+    {
+        return $this->vsechnyZaznamy()
+            ->where('OkresID', $okresID)
+            ->where('Obec IS NOT NULL')
+            ->group('ObecID')
+            ;
+    }
+
     public function seznamOkresuProSelect($krajId)
     {
         $result = $this->seznamOkresu($krajId)
@@ -39,5 +48,18 @@ class ObecModel extends BaseModel
             ->fetchPairs('ObecID', 'Obec');
 
         return $result;
+    }
+
+    // funkce pro spravny zapis adresy do mailu
+    public function resolveNazevOkresu(int $krajID, int $okresID)
+    {
+        $okres = $this->seznamOkresu($krajID)->where('OkresID', $okresID)->fetch();
+        return $okres ? $okres->Okres : 'Unknown Region';
+    }
+
+    public function resolveNazevObce(int $okresID, int $obecID)
+    {
+        $obec = $this->seznamObci($okresID)->where('ObecID', $obecID)->fetch();
+        return $obec ? $obec->Obec : 'Unknown Region';
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models\Kraj;
 
 use App\Models\BaseModel;
+use Tracy\Debugger;
 
 class KrajModel extends BaseModel
 {
@@ -19,5 +20,13 @@ class KrajModel extends BaseModel
     public function seznamKrajuProSelect()
     {
         return $this->seznamKraju()->fetchPairs('PostaID', 'Kraj');
+    }
+
+    // funkce pro spravny zapis adresy do mailu
+    public function resolveNazevKraje(int $krajID): string
+    {
+        $kraj = $this->vsechnyZaznamy()->where('PostaID', $krajID)->fetch();
+        Debugger::barDump($kraj);
+        return $kraj ? $kraj->Kraj : 'Unknown Region';
     }
 }
