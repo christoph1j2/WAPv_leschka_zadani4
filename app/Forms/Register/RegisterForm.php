@@ -8,10 +8,14 @@ use App\Models\Obec\ObecModel;
 use App\Models\Preklad\PrekladModel;
 use App\Models\User\UserModel;
 use Contributte\FormsBootstrap\BootstrapForm;
+use Latte\Runtime\Template;
 use Nette\Database\UniqueConstraintViolationException;
+use Nette\Mail\Message;
 use Nette\Security\Passwords;
 use Nette\Utils\ArrayHash;
 use Tracy\Debugger;
+use Nette\Mail\SmtpMailer;
+use Nette\Application\UI\ITemplate;
 
 class RegisterForm extends BaseForm
 {
@@ -29,6 +33,9 @@ class RegisterForm extends BaseForm
 
     public function __construct(UserModel $userModel, KrajModel $krajModel, ObecModel $obecModel, PrekladModel $prekladModel)
     {
+        $this->setTranslator($prekladModel);
+
+
         $this->userModel = $userModel;
         $this->krajModel = $krajModel;
         $this->obecModel = $obecModel;
@@ -36,12 +43,13 @@ class RegisterForm extends BaseForm
 
         parent::__construct(null);
 
+
         //$this->initializeForm();
     }
 
     protected function postProcessing()
     {
-        $this["send"]->setCaption("Register");
+        $this["send"]->setCaption("Registrovat");
     }
 
     protected function pridatPolozky()
@@ -83,13 +91,13 @@ class RegisterForm extends BaseForm
         ;
 
         //!
-        $kraj = $this->addSelect('kraj', 'Kraj: ', $this->krajModel->seznamKrajuProSelect())
+        $kraj = $this->addSelect('kraj', $this->prekladModel->translate('Kraj:'), $this->krajModel->seznamKrajuProSelect())
             ->setPrompt('-- Zvolte kraj --')
             ->checkDefaultValue(false)
             ->setRequired(self::EMPTY_FIELD)
             ;
 
-        $okres = $this->addSelect('okres', 'Okres: ')
+        $okres = $this->addSelect('okres', $this->prekladModel->translate('Okres:'))
             ->setPrompt('-- Zvolte okres --')
             ->setHtmlAttribute('data-depends', $kraj->getHtmlName())
             ->checkDefaultValue(false)
@@ -104,7 +112,7 @@ class RegisterForm extends BaseForm
             ->addRule($this::MaxLength, 'Obec může mít max %d znaků', 100)
         ;
         */
-        $city = $this->addSelect('city', 'Obec: ')
+        $city = $this->addSelect('city', $this->prekladModel->translate('Obec:'))
             ->setPrompt('-- Zvolte obec --')
             ->setHtmlAttribute('data-depends', $okres->getHtmlName())
             ->checkDefaultValue(false)
@@ -127,12 +135,12 @@ class RegisterForm extends BaseForm
         //#######
 
         //!
-        $correspondence_kraj = $this->addSelect('correspondence_kraj', 'Kraj: ', $this->krajModel->seznamKrajuProSelect())
+        $correspondence_kraj = $this->addSelect('correspondence_kraj', $this->prekladModel->translate('Kraj:'), $this->krajModel->seznamKrajuProSelect())
             ->setPrompt('-- Zvolte kraj --')
             ->setRequired(self::EMPTY_FIELD)
         ;
 
-        $correspondence_okres = $this->addSelect('correspondence_okres', 'Okres: ')
+        $correspondence_okres = $this->addSelect('correspondence_okres', $this->prekladModel->translate('Okres:'))
             ->setPrompt('-- Zvolte okres --')
             ->setHtmlAttribute('data-depends', $correspondence_kraj->getHtmlName())
             //->setRequired(self::EMPTY_FIELD)
@@ -146,7 +154,7 @@ class RegisterForm extends BaseForm
             ->addRule($this::MaxLength, 'Obec může mít max %d znaků', 100)
         ;
         */
-        $correspondence_city = $this->addSelect('correspondence_city', 'Obec: ')
+        $correspondence_city = $this->addSelect('correspondence_city', $this->prekladModel->translate('Obec:'))
             ->setPrompt('-- Zvolte obec --')
             ->setHtmlAttribute('data-depends', $correspondence_okres->getHtmlName())
             //->setRequired(self::EMPTY_FIELD)
@@ -172,7 +180,7 @@ class RegisterForm extends BaseForm
 //        $data['city'] = $data['city'] ? $data['city'] : $form['city']->getRawValue();
 //        $data['correspondence_okres'] = $data['correspondence_okres'] ? $data['correspondence_okres'] : $form['correspondence_okres']->getRawValue();
 //        $data['correspondence_city'] = $data['correspondence_city'] ? $data['correspondence_city'] : $form['correspondence_city']->getRawValue();
-//
+
         //vlozeni zaznamu do db
         try
         {
@@ -182,11 +190,15 @@ class RegisterForm extends BaseForm
             // vytvori uzivatele pomoci vycistenych dat
             $this->userModel->register((array) $sanitizedData);
 
-            $this->getPresenter()->flashMessage("Registrace proběhla úspěšně.", "success");
+            // posle email
+            $this->sendConfirmEmail($sanitizedData);
+
+            $this->getPresenter()->flashMessage('Registrace proběhla úspěšně.', "success");
             $this->getPresenter()->redirect("this");
         }
         catch (UniqueConstraintViolationException $e)
         {
+            // hodi error pokud user existuje
             $this->getPresenter()->flashMessage("Uživatel s tímto jménem již existuje!", "error");
             $this["user"]->addError(self::USER_EXISTS);
             return;
@@ -242,24 +254,9 @@ class RegisterForm extends BaseForm
         }
     }
 
-    // FIX
-    protected function onAnchor(BootstrapForm $form)
-    {
-        $id = $form['kraj']->getValue();
-        $form['okres']->setItems($id ? $this->obecModel->seznamOkresuProSelect($id) : []);
-
-        $id = $form['okres']->getValue();
-        $form['city']->setItems($id ? $this->obecModel->seznamObciProSelect($id) : []);
-
-        $id = $form['correspondence_kraj']->getValue();
-        $form['correspondence_okres']->setItems($id ? $this->obecModel->seznamOkresuProSelect($id) : []);
-
-        $id = $form['correspondence_okres']->getValue();
-        $form['correspondence_city']->setItems($id ? $this->obecModel->seznamObciProSelect($id) : []);
-    }
-
     protected function sanitizeData(ArrayHash $data)
     {
+        // cisteni dat
         $data->name = $this->sanitizeText($data->name);
         $data->surname = $this->sanitizeText($data->surname);
         $data->email = filter_var($data->email, FILTER_VALIDATE_EMAIL);
@@ -276,5 +273,94 @@ class RegisterForm extends BaseForm
 
         //Debugger::barDump($data);
         return $data;
+    }
+
+    // zaplata na zavisle selectboxy
+    protected function onAnchor(BootstrapForm $form)
+    {
+        $id = $form['kraj']->getValue();
+        $form['okres']->setItems($id ? $this->obecModel->seznamOkresuProSelect($id) : []);
+
+        $id = $form['okres']->getValue();
+        $form['city']->setItems($id ? $this->obecModel->seznamObciProSelect($id) : []);
+
+        $id = $form['correspondence_kraj']->getValue();
+        $form['correspondence_okres']->setItems($id ? $this->obecModel->seznamOkresuProSelect($id) : []);
+
+        $id = $form['correspondence_okres']->getValue();
+        $form['correspondence_city']->setItems($id ? $this->obecModel->seznamObciProSelect($id) : []);
+    }
+
+    // email logika
+    protected function sendConfirmEmail(ArrayHash $data): void
+    {
+        $locale = $this->prekladModel->getCurrentLocale();
+
+        // cesta k sablone
+        $templatePath = __DIR__ . '/../../Templates/Email/' . $locale . '/RegisterEmailTemplate.latte';
+
+        // pokud sablona neexistuje, tak cesky
+        if (!file_exists($templatePath)) {
+            $templatePath = __DIR__ . '/../../Templates/Email/cs/RegisterEmailTemplate.latte';
+        }
+
+        // vykresleni sablony - vkladani dat z formulare do mailu bez hesla
+        $latte = new \Latte\Engine;
+        $params = [];
+        foreach ($data as $key => $value) {
+            if ($key !== 'password' && $key !== 'password_confirm') {
+                $params[$key] = $value;
+            }
+        }
+        $htmlBody = $latte->renderToString($templatePath, $params);
+
+        // priprava mailu
+        $mail = new Message;
+        $mail->setFrom('no-reply@leschka.de')
+            ->addTo($data->email)
+            ->setSubject($this->getEmailSubject($locale))
+            ->setHtmlBody($htmlBody);
+
+        // posle mail
+        $this->saveEmailToFile($mail, 'C:/xampp/mailoutput');
+    }
+    protected function getEmailSubject($locale): string
+    {
+        // podle locale vrati predmet mailu
+        $subjects = [
+            'cs' => 'Potvrzeni registrace',
+            'en' => 'Registration confirmation',
+            'de' => 'Anmeldungsbestätigung',
+        ];
+
+        return $subjects[$locale] ?? $subjects['cs'];
+    }
+
+    // metoda k zapisovani mailu do souboru
+    protected function saveEmailToFile(Message $mail, string $outputDir): void
+    {
+        $locale = $this->prekladModel->getCurrentLocale();
+        if (!is_dir($outputDir)) {
+            mkdir($outputDir, 0777, true);
+        }
+        if (!is_writable($outputDir)) {
+            throw new \RuntimeException('Output directory "' . $outputDir . '" is not writable.');
+        }
+
+        // .eml soubor
+        $filenameEML = sprintf(
+            '%s/email_%s_'.$locale.'.eml',
+            rtrim($outputDir, DIRECTORY_SEPARATOR),
+            date('d_m_Y_H_i_s')
+        );
+        // .html soubor - pro jednodussi cteni
+        $filenameHTML = sprintf(
+            '%s/email_%s_'.$locale.'.html',
+            rtrim($outputDir, DIRECTORY_SEPARATOR),
+            date('d_m_Y_H_i_s')
+        );
+
+        file_put_contents($filenameEML, $mail->generateMessage());
+        file_put_contents($filenameHTML, $mail->generateMessage());
     }
 }

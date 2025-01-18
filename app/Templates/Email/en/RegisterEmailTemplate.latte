@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Registration Confirmation</title>
+</head>
+<body>
+<h1>Registration Confirmation</h1>
+
+<p>Dear {$name} {$surname},</p>
+
+<p>thank you for your registration. Here are your registration details:</p>
+
+<h2>Personal Information</h2>
+<ul>
+    <li>Username: {$username}</li>
+    <li>Email: {$email}</li>
+</ul>
+
+<h2>Permanent Address</h2>
+<ul>
+    <li>Street: {$street}</li>
+    <li>City: {$city}</li>
+    <li>Postal Code: {$postal_code}</li>
+    <li>Region: {$kraj}</li>
+    <li>District: {$okres}</li>
+</ul>
+
+<h2>Correspondence Address</h2>
+<ul>
+    <li>Street: {$correspondence_street}</li>
+    <li>City: {$correspondence_city}</li>
+    <li>Postal Code: {$correspondence_postal_code}</li>
+    <li>Region: {$correspondence_kraj}</li>
+    <li>District: {$correspondence_okres}</li>
+</ul>
+
+<p>Best regards,<br>ECL</p>
+</body>
+</html>

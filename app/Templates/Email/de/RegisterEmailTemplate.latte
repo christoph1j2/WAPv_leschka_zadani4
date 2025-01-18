@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Anmeldebestätigung</title>
+</head>
+<body>
+<h1>Anmeldebestätigung</h1>
+
+<p>Liebe/r {$name} {$surname},</p>
+
+<p>vielen Dank für Ihre Anmeldung. Hier sind Ihre Anmeldungsdaten:</p>
+
+<h2>Persönliche Info</h2>
+<ul>
+    <li>Nutzername: {$username}</li>
+    <li>Email: {$email}</li>
+</ul>
+
+<h2>Permanent Adresse</h2>
+<ul>
+    <li>Straße: {$street}</li>
+    <li>Stadt: {$city}</li>
+    <li>PLZ: {$postal_code}</li>
+    <li>Bezirk: {$kraj}</li>
+    <li>Landkreis: {$okres}</li>
+</ul>
+
+<h2>Korrespondenz-Adresse</h2>
+<ul>
+    <li>Straße: {$correspondence_street}</li>
+    <li>Stadt: {$correspondence_city}</li>
+    <li>PLZ: {$correspondence_postal_code}</li>
+    <li>Bezirk: {$correspondence_kraj}</li>
+    <li>Landkreis: {$correspondence_okres}</li>
+</ul>
+
+<p>Mit freundlichen Grüßen,<br>ECL</p>
+</body>
+</html>

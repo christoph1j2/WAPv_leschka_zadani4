@@ -12,7 +12,7 @@ use App\Models\User\UserModel;
 use Latte\Essential\TranslatorExtension;
 use Nette;
 
-ob_start();
+//ob_start();
 
 final class HomePresenter extends Nette\Application\UI\Presenter
 {
@@ -40,18 +40,25 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     {
         parent::beforeRender();
 
-
+        // prekladac
         $extension = new TranslatorExtension(
             $this->prekladModel->translate(...)
         );
         $this->template->getLatte()->addExtension($extension);
         $this->prekladModel->nacistPreklady($this->locale);
 
+        $this->template->locale = $this->locale;
+
     }
 
     function createComponentRegister(): ?Nette\ComponentModel\IComponent
     {
-        return new RegisterComponent($this->userModel, $this->krajModel, $this->obecModel, $this->prekladModel);
+        // vytvori komponentu register a setne locale a translator
+        $component = new RegisterComponent($this->userModel, $this->krajModel, $this->obecModel, $this->prekladModel);
+        $component->setTranslator($this->prekladModel);
+        $component->setLocale($this->locale);
+
+        return $component;
     }
 
     // Dynamic select box
@@ -59,10 +66,12 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     {
         if($this->isAjax())
         {
+            $this->prekladModel->nacistPreklady($this->locale);
+
             // Seznam voleb
             $volby = $this->obecModel->seznamOkresuProSelect($choice);
 
-            $options = "<option value='' selected>-- Zvolte Okres --</option>\n";
+            $options = "<option value='' selected>{$this->prekladModel->translate('-- Zvolte okres --')}</option>\n";
             foreach ($volby AS $key => $value)
             {
                 // Pridani jedne volby do select boxu
@@ -78,9 +87,11 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     {
         if($this->isAjax())
         {
+            $this->prekladModel->nacistPreklady($this->locale);
+
             $volby = $this->obecModel->seznamObciProSelect($choice);
 
-            $options = "<option value='' selected> -- Zvolte Obec --</option>\n";
+            $options = "<option value='' selected>{$this->prekladModel->translate('-- Zvolte obec --')}</option>\n";
             foreach ($volby AS $key => $value)
             {
                 $options .= sprintf("<option value='%d'>%s</option>\n", $key, $value);
@@ -93,10 +104,12 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     {
         if($this->isAjax())
         {
+            $this->prekladModel->nacistPreklady($this->locale);
+
             // Seznam voleb
             $volby = $this->obecModel->seznamOkresuProSelect($choice);
 
-            $options = "<option value='' selected>-- Zvolte Okres --</option>\n";
+            $options = "<option value='' selected>{$this->prekladModel->translate('-- Zvolte okres --')}</option>\n";
             foreach ($volby AS $key => $value)
             {
                 // Pridani jedne volby do select boxu
@@ -112,9 +125,11 @@ final class HomePresenter extends Nette\Application\UI\Presenter
     {
         if($this->isAjax())
         {
+            $this->prekladModel->nacistPreklady($this->locale);
+
             $volby = $this->obecModel->seznamObciProSelect($choice);
 
-            $options = "<option value='' selected> -- Zvolte Obec --</option>\n";
+            $options = "<option value='' selected>{$this->prekladModel->translate('-- Zvolte obec --')}</option>\n";
             foreach ($volby AS $key => $value)
             {
                 $options .= sprintf("<option value='%d'>%s</option>\n", $key, $value);

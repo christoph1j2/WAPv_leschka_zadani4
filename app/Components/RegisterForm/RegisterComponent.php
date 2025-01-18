@@ -31,34 +31,32 @@ class RegisterComponent extends BaseComponent
 
     public function __construct(UserModel $userModel, KrajModel $krajModel, ObecModel $obecModel, PrekladModel $prekladModel)
     {
+        // vola construct base komponenty
         parent::__construct();
 
-
-
+        // inicializace
         $this->userModel = $userModel;
         $this->krajModel = $krajModel;
         $this->obecModel = $obecModel;
         $this->prekladModel = $prekladModel;
 
-        if (!$this->prekladModel) {
-            throw new \RuntimeException('PrekladModel was not properly injected');
-        }
+//        if (!$this->prekladModel) {
+//            throw new \RuntimeException('PrekladModel was not properly injected');
+//        }
     }
 
     function beforeRender()
     {
         parent::beforeRender();
 
-        $latte = $this->template->getLatte();
+        // pripojeni prekladace ke komponente
+        $extension = new TranslatorExtension($this->prekladModel->translate(...));
+        $this->template->getLatte()->addExtension($extension);
 
-        $extension = new TranslatorExtension(
-            $this->prekladModel->translate(...)
-        );
-        $latte->addExtension($extension);
         $this->prekladModel->nacistPreklady($this->locale);
 
         $this->template->setTranslator($this->prekladModel);
-
+        $this->template->locale = $this->locale;
     }
 
     function createComponentForm(): ?Nette\ComponentModel\IComponent
@@ -73,11 +71,29 @@ class RegisterComponent extends BaseComponent
 
     public function render(...$parameters): void
     {
-        // For debugging
-        if (!$this->krajModel) {
-            throw new \RuntimeException('KrajModel is null during render');
-        }
+//        // For debugging
+//        if (!$this->krajModel) {
+//            throw new \RuntimeException('KrajModel is null during render');
+//        }
 
         parent::render();
     }
+
+    public function setTranslator(Nette\Localization\Translator $translator): void
+    {
+        // zaplata
+        $this->onAnchor[] = function () use ($translator)
+        {
+            $extension = new \Latte\Essential\TranslatorExtension($translator->translate(...));
+            $this->template->getLatte()->addExtension($extension);
+            $this->template->setTranslator($translator);
+        };
+    }
+
+    public function setLocale(string $locale): void
+    {
+        $this->locale = $locale;
+        $this->prekladModel->setLocale($locale);
+    }
+
 }

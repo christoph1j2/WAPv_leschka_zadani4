@@ -2,14 +2,13 @@
 
 {block content}
 <div id="banner" class="bg-white px-3 py-1 my-2 rounded">
-	<h1 n:block=title class="text-center">Nette, Zadání 4</h1>
+	<h1 n:block=title class="text-center">Nette, {_'Zadání'} 4</h1>
 </div>
 
 <div id="content">
 	<div n:foreach="$flashes as $flash" class="mx-3 flash-message flash-{$flash->type}">
 		{$flash->message}
 	</div>
-	<h2 class="card-title text-center mb-4">{translate}Registrační formulář{/translate}</h2>
 		{control register}
 </div>
 
@@ -25,7 +24,7 @@
 			// Vytvoreni AJAX pozadavku + zpracovani odpovedi
 			$.nette.ajax({
 				url: {plink ZmenaOkresSelectBoxu!},
-				data: { name: select.name, choice: select.value }
+				data: { name: select.name, choice: select.value, locale: {$locale} }
 			})
 					.done(function (payload) {
 						console.log(payload);
@@ -48,7 +47,7 @@
 
 			$.nette.ajax({
 				url: {plink ZmenaObecSelectBoxu!},
-				data: { name: select.name, choice: select.value }
+				data: { name: select.name, choice: select.value, locale: {$locale} }
 			})
 					.done(function (payload){
 						console.log(payload);
@@ -71,7 +70,7 @@
 
 			$.nette.ajax({
 				url: {plink ZmenaOkres2SelectBoxu!},
-				data: { name: select.name, choice: select.value }
+				data: { name: select.name, choice: select.value, locale: {$locale} }
 			})
 					.done(function (payload){
 						console.log(payload);
@@ -92,7 +91,7 @@
 
 			$.nette.ajax({
 				url: {plink ZmenaObec2SelectBoxu!},
-				data: { name: select.name, choice: select.value }
+				data: { name: select.name, choice: select.value, locale: {$locale} }
 			})
 					.done(function (payload){
 						console.log(payload);

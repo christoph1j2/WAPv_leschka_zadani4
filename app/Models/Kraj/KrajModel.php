@@ -6,7 +6,6 @@ use App\Models\BaseModel;
 
 class KrajModel extends BaseModel
 {
-
     function getTableName()
     {
         return 'kraj';

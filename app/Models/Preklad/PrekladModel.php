@@ -21,10 +21,15 @@ class PrekladModel extends BaseModel implements Translator
         return 'preklad';
     }
 
-    protected function setLocale(string $locale)
+    function setLocale(string $locale)
     {
         $allowedLocales = ['cs', 'en', 'de'];
         $this->locale = in_array($locale, $allowedLocales) ? $locale : 'cs';
+    }
+
+    function getCurrentLocale(): string
+    {
+        return $this->locale;
     }
 
     public function nacistPreklady(string $locale)
@@ -43,10 +48,11 @@ class PrekladModel extends BaseModel implements Translator
         foreach ($this->preklady as $preklad) {
             if ($preklad['cs'] === $message) {
                 $key = "{$this->locale}";
-                return $preklad[$key] ?? $message; // Fallback to input message
+                return $preklad[$key] ?? $message;
             }
         }
 
-        return '??? ' . $message . ' ???'; // If no translation found
+        return '??? ' . $message . ' ???';
+        //return $message;
     }
 }

@@ -46,20 +46,6 @@ final class Template_f7d18b0cb5 extends Latte\Runtime\Template
 
 		echo '            <div class="card shadow">
                 <div class="card-body">
-                    <h2 class="card-title text-center mb-4">Registrační formulář</h2>
-
-                    <p class="text-center mb-4">
-                        <a href="';
-		echo LR\Filters::escapeHtmlAttr(LR\Filters::safeUrl($presenter->link('this', ['locale' => 'cs']))) /* line 22 */;
-		echo '">CZ</a>
-                        <a href="';
-		echo LR\Filters::escapeHtmlAttr(LR\Filters::safeUrl($presenter->link('this', ['locale' => 'en']))) /* line 23 */;
-		echo '">EN</a>
-                        <a href="';
-		echo LR\Filters::escapeHtmlAttr(LR\Filters::safeUrl($presenter->link('this', ['locale' => 'de']))) /* line 24 */;
-		echo '">DE</a>
-                    </p>
-
 ';
 		foreach ($flashes as $flash) /* line 27 */ {
 			echo '                    <div class="alert alert-';

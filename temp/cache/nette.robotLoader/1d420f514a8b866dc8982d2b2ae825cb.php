@@ -15,7 +15,7 @@ return array (
     'App\\Components\\RegisterForm\\RegisterComponent' => 
     array (
       0 => 'C:\\xampp\\htdocs\\leschka_zadani4\\app\\Components\\RegisterForm\\RegisterComponent.php',
-      1 => 1736685457,
+      1 => 1737214253,
     ),
     'App\\Core\\RouterFactory' => 
     array (
@@ -25,12 +25,12 @@ return array (
     'App\\Forms\\BaseForm' => 
     array (
       0 => 'C:\\xampp\\htdocs\\leschka_zadani4\\app\\Forms\\BaseForm.php',
-      1 => 1736685058,
+      1 => 1737200785,
     ),
     'App\\Forms\\Register\\RegisterForm' => 
     array (
       0 => 'C:\\xampp\\htdocs\\leschka_zadani4\\app\\Forms\\Register\\RegisterForm.php',
-      1 => 1736688165,
+      1 => 1737216546,
     ),
     'App\\Models\\BaseModel' => 
     array (
@@ -47,10 +47,15 @@ return array (
       0 => 'C:\\xampp\\htdocs\\leschka_zadani4\\app\\Models\\Obec\\ObecModel.php',
       1 => 1736719605,
     ),
+    'App\\Models\\Preklad\\PrekladModel' => 
+    array (
+      0 => 'C:\\xampp\\htdocs\\leschka_zadani4\\app\\Models\\Preklad\\PrekladModel.php',
+      1 => 1737214915,
+    ),
     'App\\Models\\User\\UserModel' => 
     array (
       0 => 'C:\\xampp\\htdocs\\leschka_zadani4\\app\\Models\\User\\UserModel.php',
-      1 => 1736647149,
+      1 => 1737200785,
     ),
     'App\\UI\\Accessory\\LatteExtension' => 
     array (
@@ -70,7 +75,7 @@ return array (
     'App\\UI\\Home\\HomePresenter' => 
     array (
       0 => 'C:\\xampp\\htdocs\\leschka_zadani4\\app\\UI\\Home\\HomePresenter.php',
-      1 => 1736720560,
+      1 => 1737209195,
     ),
   ),
   1 => 
@@ -81,6 +86,7 @@ return array (
     'App\\UI\\Homepage\\HomepagePresenter' => 3,
     'App\\UI\\Sign\\SignPresenter' => 1,
     'App\\Components\\RegisterForm\\RegisterComponentTemplate' => 3,
+    'Nette\\Mail\\FileMailer' => 1,
   ),
   2 => 
   array (

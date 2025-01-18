@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Potvrzení registrace</title>
+</head>
+<body>
+<h1>Potvrzení registrace</h1>
+
+<p>Vážený/á {$name} {$surname},</p>
+
+<p>děkujeme za Vaši registraci. Zde jsou Vaše registrační údaje:</p>
+
+<h2>Osobní údaje</h2>
+<ul>
+    <li>Uživatelské jméno: {$username}</li>
+    <li>Email: {$email}</li>
+</ul>
+
+<h2>Trvalá adresa</h2>
+<ul>
+    <li>Ulice: {$street}</li>
+    <li>Město: {$city}</li>
+    <li>PSČ: {$postal_code}</li>
+    <li>Kraj: {$kraj}</li>
+    <li>Okres: {$okres}</li>
+</ul>
+
+<h2>Korespondenční adresa</h2>
+<ul>
+    <li>Ulice: {$correspondence_street}</li>
+    <li>Město: {$correspondence_city}</li>
+    <li>PSČ: {$correspondence_postal_code}</li>
+    <li>Kraj: {$correspondence_kraj}</li>
+    <li>Okres: {$correspondence_okres}</li>
+</ul>
+
+<p>S pozdravem,<br>ECL</p>
+</body>
+</html>

@@ -62,10 +62,12 @@ class Container_d6b9ae87e6 extends Nette\DI\Container
 		'Nette\Routing\Router' => [['01']],
 		'ArrayAccess' => [2 => ['01', 'application.1', 'application.3']],
 		'Nette\Application\Routers\RouteList' => [['01']],
-		'App\Models\BaseModel' => [['02', '03', '04']],
+		'App\Models\BaseModel' => [['02', '03', '04', '05']],
 		'App\Models\User\UserModel' => [['02']],
 		'App\Models\Kraj\KrajModel' => [['03']],
 		'App\Models\Obec\ObecModel' => [['04']],
+		'Nette\Localization\Translator' => [['05']],
+		'App\Models\Preklad\PrekladModel' => [['05']],
 		'Nette\Application\UI\Presenter' => [2 => ['application.1', 'application.3']],
 		'Nette\Application\UI\Control' => [2 => ['application.1', 'application.3']],
 		'Nette\Application\UI\Component' => [2 => ['application.1', 'application.3']],
@@ -117,6 +119,15 @@ class Container_d6b9ae87e6 extends Nette\DI\Container
 	}
 
 
+	public function createService05(): App\Models\Preklad\PrekladModel
+	{
+		return new App\Models\Preklad\PrekladModel(
+			$this->getService('database.default.explorer'),
+			$this->getService('security.passwords'),
+		);
+	}
+
+
 	public function createServiceApplication__1(): App\UI\Error\Error4xx\Error4xxPresenter
 	{
 		$service = new App\UI\Error\Error4xx\Error4xxPresenter;
@@ -142,7 +153,7 @@ class Container_d6b9ae87e6 extends Nette\DI\Container
 
 	public function createServiceApplication__3(): App\UI\Home\HomePresenter
 	{
-		$service = new App\UI\Home\HomePresenter;
+		$service = new App\UI\Home\HomePresenter($this->getService('05'));
 		$service->injectPrimary(
 			$this->getService('http.request'),
 			$this->getService('http.response'),
