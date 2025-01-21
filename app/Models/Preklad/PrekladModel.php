@@ -52,7 +52,7 @@ class PrekladModel extends BaseModel implements Translator
             }
         }
 
-        return '??? ' . $message . ' ???';
-        //return $message;
+        //return '??? ' . $message . ' ???';
+        return $message;
     }
 }

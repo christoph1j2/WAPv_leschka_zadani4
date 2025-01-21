@@ -26,7 +26,7 @@ class KrajModel extends BaseModel
     public function resolveNazevKraje(int $krajID): string
     {
         $kraj = $this->vsechnyZaznamy()->where('PostaID', $krajID)->fetch();
-        Debugger::barDump($kraj);
+        //Debugger::barDump($kraj);
         return $kraj ? $kraj->Kraj : 'Unknown Region';
     }
 }
